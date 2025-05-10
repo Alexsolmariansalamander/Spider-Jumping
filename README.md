@@ -1,2 +1,4 @@
 # Spider-Jumping
 An assignment for comp1000 where we have to make something that involves the key word "Jumping", so im making a jumping spider
+
+edit: shift in idea, I now want the spider to be in a small window that moves along with it (on the actual monitor). Ill make it adjust to the size of the monitor. And everytime the mouse gets closer to the 'x' (close window) the spider to move away from the mouse. The spider will also jump away (or in a random direction) if you move too quickly towards the window (evasive menuvours). What does this change: I now dont have to make the spider actually move, I just have to make it look like it...is...that sounds harder...anyway, other than that most things stay mostly the same. I just have to learn how to get some values (monitor size, window location, mouse location relative to window (or to monitor))
