@@ -9,7 +9,7 @@ vector end_pos = new vector(0,0);
 
 
 void setup(){
-  size(800,800);
+  size(900,900);
   frameRate(60);
 }
 
