@@ -9,10 +9,6 @@ float calf_angle = 0;
 PVector foot_pos = new PVector(0,0);
 // this is where the foot wants to be. This and spider_pos are the only 2 publicly modifiable values, the rest are changed only in calculate()
 PVector desired_foot_pos = new PVector(0,0);
-  
-int x = 0;
-int y = 0;
-
 
 void setup(){
   size(800,800);
@@ -24,10 +20,6 @@ void draw(){
   background(255);
   calculate();
   draw_spider();
-  windowMove(x,y);
-  x += 2;
-  y += 1;
-
 }
 
 void mouseClicked(){
@@ -62,11 +54,26 @@ void draw_spider(){
   fill(0);
   ellipse(spider_pos.x,spider_pos.y,75,75);
   
+  
+  // testing
+  fill(255,0,0);
+  ellipse(foot_pos.x,foot_pos.y,25,25);
+  fill(0,255,0);
+  ellipse(desired_foot_pos.x,desired_foot_pos.y,15,15);
 }
 
 // Calculates all the variable values of the spiders legs and body, so that it can then be drawn
 void calculate(){
   // given spider_pos and desired_foot_pos find:
   // foot_pos , thigh_length , thigh_angle , joint_pos , calf_length , calf_angle
-  PVector distance = PVector.sub(spider_pos,desired_foot_pos);
+  float distance = dist(spider_pos.x,spider_pos.y,desired_foot_pos.x,desired_foot_pos.y);
+  float max_length = thigh_length + calf_length;
+  
+  if (distance > max_length){ // clamp foot distance
+    PVector temp = desired_foot_pos;
+    foot_pos.set(desired_foot_pos.normalize().mult(max_length));
+    desired_foot_pos.set(temp);
+  } else {
+    foot_pos.set(desired_foot_pos);
+  }
 }
