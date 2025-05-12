@@ -1,6 +1,7 @@
 PVector spider_pos = new PVector(400,400); // Spider body location
 // These make up the leg of the spider, all values are determined in calculate() *apart from leg_width
 float leg_width = 15;
+int leg_bend = -1; // -1 bends left, 1 bends right
 float thigh_length = 100;
 float thigh_angle = 0;
 PVector joint_pos = new PVector(400,400 + 200); // leg joing
@@ -84,9 +85,9 @@ void calculate(){
   PVector foot_temp = new PVector (foot_pos.x,foot_pos.y);
   PVector foot_relative = foot_pos.sub(spider_pos);
   float foot_true_bearing = foot_relative.heading();
-  float numerator = pow(thigh_length,2) + pow(distance,2) - pow(calf_length,2);
-  float denominator = 2 * thigh_length * distance;
-  thigh_angle = acos(numerator/denominator) + foot_true_bearing - PI/2;
+  float thigh_numerator = pow(thigh_length,2) + pow(distance,2) - pow(calf_length,2);
+  float thigh_denominator = 2 * thigh_length * distance;
+  thigh_angle = leg_bend * acos(thigh_numerator/thigh_denominator) + foot_true_bearing - PI/2;
   foot_pos.set(foot_temp);
   
   // Joint stuff
@@ -95,10 +96,10 @@ void calculate(){
   joint_pos.set(joint_relative.add(spider_pos));
   
   // Calf stuff
-  //sin rule = sin(thigh_angle)/calf_length = sin(?)/distance
-  float temp_thigh = thigh_angle;
-  thigh_angle -= foot_true_bearing;
-  calf_angle = asin(( sin(thigh_angle)* distance) / calf_length);
-  thigh_angle = temp_thigh;
+  //cosine rule, but adding slightly different rotation at the end (due to different reference location)
 
+  float calf_numerator = pow(thigh_length,2) + pow(calf_length,2) - pow(distance,2);
+  float calf_denominator = 2 * thigh_length * calf_length;
+  calf_angle = leg_bend * acos(calf_numerator/calf_denominator) + thigh_angle + PI;
+  
 }
