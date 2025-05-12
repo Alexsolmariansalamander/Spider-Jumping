@@ -34,15 +34,15 @@ void draw_spider(){
   // thigh
   pushMatrix();
   translate(spider_pos.x, spider_pos.y);
-  rect(-leg_width/2,0, leg_width,thigh_length);
   rotate(thigh_angle);
+  rect(-leg_width/2,0, leg_width,thigh_length);
   popMatrix();
   
   // calf
   pushMatrix();
   translate(joint_pos.x, joint_pos.y);
-  rect(-leg_width/2,0, leg_width, calf_length);
   rotate(calf_angle);
+  rect(-leg_width/2,0, leg_width, calf_length);
   popMatrix();
   
   // joint
@@ -69,11 +69,36 @@ void calculate(){
   float distance = dist(spider_pos.x,spider_pos.y,desired_foot_pos.x,desired_foot_pos.y);
   float max_length = thigh_length + calf_length;
   
-  if (distance > max_length){ // clamp foot distance
-    PVector temp = desired_foot_pos;
-    foot_pos.set(desired_foot_pos.normalize().mult(max_length));
-    desired_foot_pos.set(temp);
+  // Clamping foot distance
+  if (distance > max_length){
+    PVector desired_temp = new PVector(desired_foot_pos.x,desired_foot_pos.y);
+    desired_foot_pos.sub(spider_pos);
+    foot_pos.set(desired_foot_pos.normalize().mult(max_length).add(spider_pos));
+    desired_foot_pos.set(desired_temp);
+    distance = max_length;
   } else {
     foot_pos.set(desired_foot_pos);
   }
+  // Thigh stuff
+  //cosine rule
+  PVector foot_temp = new PVector (foot_pos.x,foot_pos.y);
+  PVector foot_relative = foot_pos.sub(spider_pos);
+  float foot_true_bearing = foot_relative.heading();
+  float numerator = pow(thigh_length,2) + pow(distance,2) - pow(calf_length,2);
+  float denominator = 2 * thigh_length * distance;
+  thigh_angle = acos(numerator/denominator) + foot_true_bearing - PI/2;
+  foot_pos.set(foot_temp);
+  
+  // Joint stuff
+  //spider_pos + PVector(sin(angle) * thigh_length, cos(angle) * thigh_length)
+  PVector joint_relative = new PVector(sin(thigh_angle - PI), cos(thigh_angle)).mult(thigh_length);
+  joint_pos.set(joint_relative.add(spider_pos));
+  
+  // Calf stuff
+  //sin rule = sin(thigh_angle)/calf_length = sin(?)/distance
+  float temp_thigh = thigh_angle;
+  thigh_angle -= foot_true_bearing;
+  calf_angle = asin(( sin(thigh_angle)* distance) / calf_length);
+  thigh_angle = temp_thigh;
+
 }
