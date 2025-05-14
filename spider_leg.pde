@@ -1,4 +1,7 @@
 public class Leg {
+  
+  
+  /*  ________VARIABLES________  */
   // init variables
   private final float leg_width; // 15
   private final int leg_bend; // -1 bends right, 1 bends left
@@ -15,22 +18,30 @@ public class Leg {
   private float calf_angle = 0;
   private PVector foot_pos = new PVector(0,0);
   
+  
+  
+  /*  ________CONSTRUCTOR________  */ 
+ 
   public Leg(float leg_width, int leg_bend, float thigh_length, float calf_length) {
     this.leg_width = leg_width;
-    this.leg_bend = Math.max(1, Math.min(-1, leg_bend));
+    this.leg_bend = Math.max(-1, Math.min(1, leg_bend));
     this.thigh_length = thigh_length;
     this.calf_length = calf_length;
   }
   
-  // calculates and draws
+  
+  
+  /*  ________METHODS________  */ 
+  
+  // calculates and draws, the general call for updating the leg
   public void update() {
     calculate();
     drawLeg();
   }
   
-  // draws in order of thigh -> calf -> knee/joint
+  
+  // draws the leg in order of thigh -> calf -> knee/joint
   public void drawLeg() {
-    // ____Leg____
     fill(100);
     
     // thigh
@@ -51,6 +62,8 @@ public class Leg {
     circle(joint_pos.x, joint_pos.y, 20);
   }
   
+  
+  // calculates the angles and positions of the leg segments using trig
   private void calculate() {
     // given spider_pos and desired_foot_pos find:
     // foot_pos , thigh_length , thigh_angle , joint_pos , calf_length , calf_angle
@@ -67,6 +80,7 @@ public class Leg {
     } else {
       foot_pos.set(desired_foot_pos);
     }
+    
     // Thigh stuff
     //cosine rule
     PVector foot_temp = new PVector (foot_pos.x,foot_pos.y);
@@ -84,18 +98,21 @@ public class Leg {
     
     // Calf stuff
     //cosine rule, but adding slightly different rotation at the end (due to different reference location)
-  
     float calf_numerator = pow(thigh_length,2) + pow(calf_length,2) - pow(distance,2);
     float calf_denominator = 2 * thigh_length * calf_length;
     calf_angle = leg_bend * acos(calf_numerator/calf_denominator) + thigh_angle + PI;
   }
   
+  
+  // get and set methods
   public void setPivot(PVector pos) {
     this.pivot_pos.set(pos);
   }
   public void setFootPos(PVector pos) {
     this.desired_foot_pos.set(pos);
   }
-  
+  public PVector getFootPos() {
+    return foot_pos;
+  }
   
 }
