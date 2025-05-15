@@ -1,10 +1,11 @@
 PVector spider_pos = new PVector(400,400); // Spider body location
 PVector spider_vel = new PVector(0,0);
+float spider_rot = 0; // spiders body rotation
 boolean is_moving = false;
 
 // this is where the foot wants to be. This and spider_pos are the only 2 publicly modifiable values, the rest are changed only in calculate()
 PVector desired_spider_pos = new PVector(0,0);
-Leg spider_leg = new Leg(15,1,100,100);
+Leg spider_leg = new Leg(15,1,100,100,new PVector(-100,0));
 
 
 void setup() {
@@ -21,7 +22,7 @@ void draw() {
   if (is_moving == true){
     moveToPoint(desired_spider_pos);}
   // handles leg movement
-  updateLegs();
+  spider_leg.computeFootTarget(spider_pos, spider_rot);
   
   // handles drawing whole spider
   updateSpider();
@@ -63,37 +64,4 @@ void moveToPoint(PVector moving_to) {
       is_moving = false;
     }
   }
-  println(is_moving + " " + spider_pos + " " + moving_to + "" + (spider_pos.dist(moving_to) == 0) +" ");
-}
-
-
-void updateLegs(){
-  PVector closest_border_point = new PVector(0,0);
-  PVector closest_border = new PVector(0,0);
-  closest_border_point = spider_pos.copy();
-  closest_border = spider_pos.copy();
-  
-  // calculating which axis is closer e.g.; (300,600) -> (-100,200) -> (100,200); therefore y is closer, also confirmed by going 800 - 600 = 200, and 200 < 300
-  closest_border.sub(400,400);
-  closest_border.set(abs(closest_border.x),abs(closest_border.y));
-  
-  if (closest_border.y >= closest_border.x) { // spider is closer to either top or bottom
-  
-    if (spider_pos.y >= 400) { // spider is closer to bottom
-      closest_border_point.set(spider_pos.x,800);
-      
-    } else { // spider is closer to top
-      closest_border_point.set(spider_pos.x,0);
-    }
-    
-  } else { // spider is closer to either left or right
-  
-    if (spider_pos.x >= 400) { // spider is closer to right
-      closest_border_point.set(800,spider_pos.y);
-      
-    } else { // spider is closer to left
-      closest_border_point.set(0,spider_pos.y);
-    }
-  }
-  spider_leg.setFootPos(closest_border_point);
 }

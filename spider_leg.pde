@@ -7,10 +7,12 @@ public class Leg {
   private final int leg_bend; // -1 bends right, 1 bends left
   private final float thigh_length; // 100
   private final float calf_length; // 100
+  private final PVector foot_anchor_offset; // determines where abouts the foot want to be
   
   // leg control variables
   private PVector pivot_pos = new PVector(400,400); // body/pivot location
   private PVector desired_foot_pos = new PVector(0,0);
+  
   
   // leg draw variables
   private float thigh_angle = 0;
@@ -22,11 +24,12 @@ public class Leg {
   
   /*  ________CONSTRUCTOR________  */ 
  
-  public Leg(float leg_width, int leg_bend, float thigh_length, float calf_length) {
+  public Leg(float leg_width, int leg_bend, float thigh_length, float calf_length, PVector foot_anchor_offset) {
     this.leg_width = leg_width;
     this.leg_bend = Math.max(-1, Math.min(1, leg_bend));
     this.thigh_length = thigh_length;
     this.calf_length = calf_length;
+    this.foot_anchor_offset = foot_anchor_offset;
   }
   
   
@@ -114,5 +117,43 @@ public class Leg {
   public PVector getFootPos() {
     return foot_pos;
   }
+  
+  
+  // computes the target foot location based on the displaced anchor thats floating to the left or right of the body
+  public void computeFootTarget(PVector body_position, float bodyRotation) {
+    
+    PVector closest_border_point = new PVector(0,0);
+    
+    PVector relative_offset_pos = foot_anchor_offset.copy().rotate(bodyRotation); // relative to the body
+    PVector border_calc = new PVector(0,0); // manipulated to calculate which border is closest
+    border_calc = body_position.copy().add(relative_offset_pos); // uhhhhh...its accounting for the offset and rotation of body 
+    
+    // calculating which axis is closer e.g.; (300,600) -> (-100,200) -> (100,200); therefore y is closer, also confirmed by going 800 - 600 = 200, and 200 < 300
+    border_calc.sub(400,400);
+    border_calc.set(abs(border_calc.x),abs(border_calc.y));
+    
+    if (border_calc.y >= border_calc.x) { // spider is closer to either top or bottom
+    
+      if (spider_pos.y >= 400) { // spider is closer to bottom
+        closest_border_point.set(body_position.x + relative_offset_pos.x,800);
+        
+      } else { // spider is closer to top
+        closest_border_point.set(body_position.x + relative_offset_pos.x,0);
+      }
+      
+    } else { // spider is closer to either left or right
+    
+      if (spider_pos.x >= 400) { // spider is closer to right
+        closest_border_point.set(800,body_position.y + relative_offset_pos.y);
+        
+      } else { // spider is closer to left
+        closest_border_point.set(0,body_position.y + relative_offset_pos.y);
+      }
+    }
+    this.setFootPos(closest_border_point);
+  }
+  
+  
+  
   
 }
