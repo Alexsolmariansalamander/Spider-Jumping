@@ -2,7 +2,7 @@ public class Spider {
    /*  ________VARIABLES________  */
    
   // body control variables
-  private PVector position = new PVector(400,800); // Spider body location
+  private PVector position = new PVector(width/2,height * 9/10); // Spider body location
   private PVector target_position = new PVector(0,0); // where spider wants to be
   private PVector velocity = new PVector(0,0); // 
   private float rotation = 0; // spiders body rotation
@@ -11,17 +11,17 @@ public class Spider {
   
   
   // Legs
-  Leg leg = new Leg(15,1,100,100,new PVector(-100,0));
-  
-  
+  Leg leg1 = new Leg(15,1,90,90,new PVector(-100,0)); // inner left leg
+  Leg leg2 = new Leg(15,1,100,100,new PVector(-150,0)); // outer left leg
+  Leg leg3 = new Leg(15,-1,90,90,new PVector(100,0)); // inner right leg
+  Leg leg4 = new Leg(15,-1,100,100,new PVector(150,0)); // outer right leg
+  private final Leg[] legs = {leg1,leg2,leg3,leg4};
   
   
   /*  ________CONSTRUCTOR________  */ 
  
   public Spider() {
-    this.leg.setFootPos(new PVector(width/2,height));
-    this.position.set(new PVector(width/2,height));
-    println((width/2) + " " + height +" " + " " );
+    this.leg1.setFootPos(new PVector(width/2,height));
   }
   
   
@@ -35,10 +35,11 @@ public class Spider {
       moveTo(target_position);}
     
     // moves and draws legs
-    leg.computeFootTarget(position, rotation);
-    leg.setPivot(position);
-    leg.update();
-    
+    for (int i = 0; i < legs.length; i++){
+      legs[i].computeFootTarget(position, rotation);
+      legs[i].setPivot(position);
+      legs[i].update();
+    }
     // draws body
     this.render(); // has to draw over the legs
   }
@@ -49,9 +50,6 @@ public class Spider {
     ellipse(position.x,position.y,75,75); 
     
     // testing
-    PVector foot_pos = new PVector(this.leg.getFootPos().x,this.leg.getFootPos().y);
-    fill(255,0,0);
-    ellipse(foot_pos.x,foot_pos.y,25,25);
     fill(0,255,0);
     ellipse(target_position.x,target_position.y,15,15);
   }
