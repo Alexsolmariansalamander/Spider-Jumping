@@ -36,20 +36,22 @@ public class Leg {
   
   /*  ________METHODS________  */ 
   
-  // calculates and draws, the general call for updating the leg
+  
+  // calculates and draws. The general call for updating the leg
   public void update() {
-    calculate();
-    drawLeg();
+    solveIK();
+    render();
   }
   
   
+  
   // draws the leg in order of thigh -> calf -> knee/joint
-  public void drawLeg() {
+  public void render() {
     fill(100);
     
     // thigh
     pushMatrix();
-    translate(spider_pos.x, spider_pos.y);
+    translate(pivot_pos.x, pivot_pos.y);
     rotate(thigh_angle);
     rect(-leg_width/2,0, leg_width,thigh_length);
     popMatrix();
@@ -66,18 +68,19 @@ public class Leg {
   }
   
   
+  
   // calculates the angles and positions of the leg segments using trig
-  private void calculate() {
+  private void solveIK() {
     // given spider_pos and desired_foot_pos find:
     // foot_pos , thigh_length , thigh_angle , joint_pos , calf_length , calf_angle
-    float distance = dist(spider_pos.x,spider_pos.y,desired_foot_pos.x,desired_foot_pos.y);
+    float distance = dist(pivot_pos.x,pivot_pos.y,desired_foot_pos.x,desired_foot_pos.y);
     float max_length = thigh_length + calf_length;
     
     // Clamping foot distance
     if (distance > max_length) {
       PVector desired_temp = new PVector(desired_foot_pos.x,desired_foot_pos.y);
-      desired_foot_pos.sub(spider_pos);
-      foot_pos.set(desired_foot_pos.normalize().mult(max_length).add(spider_pos));
+      desired_foot_pos.sub(pivot_pos);
+      foot_pos.set(desired_foot_pos.normalize().mult(max_length).add(pivot_pos));
       desired_foot_pos.set(desired_temp);
       distance = max_length;
     } else {
@@ -87,7 +90,7 @@ public class Leg {
     // Thigh stuff
     //cosine rule
     PVector foot_temp = new PVector (foot_pos.x,foot_pos.y);
-    PVector foot_relative = foot_pos.sub(spider_pos);
+    PVector foot_relative = foot_pos.sub(pivot_pos);
     float foot_true_bearing = foot_relative.heading();
     float thigh_numerator = pow(thigh_length,2) + pow(distance,2) - pow(calf_length,2);
     float thigh_denominator = 2 * thigh_length * distance;
@@ -97,7 +100,7 @@ public class Leg {
     // Joint stuff
     //spider_pos + PVector(sin(angle) * thigh_length, cos(angle) * thigh_length)
     PVector joint_relative = new PVector(sin(thigh_angle - PI), cos(thigh_angle)).mult(thigh_length);
-    joint_pos.set(joint_relative.add(spider_pos));
+    joint_pos.set(joint_relative.add(pivot_pos));
     
     // Calf stuff
     //cosine rule, but adding slightly different rotation at the end (due to different reference location)
@@ -105,6 +108,7 @@ public class Leg {
     float calf_denominator = 2 * thigh_length * calf_length;
     calf_angle = leg_bend * acos(calf_numerator/calf_denominator) + thigh_angle + PI;
   }
+  
   
   
   // get and set methods
@@ -119,11 +123,10 @@ public class Leg {
   }
   
   
+  
   // computes the target foot location based on the displaced anchor thats floating to the left or right of the body
-  public void computeFootTarget(PVector body_position, float bodyRotation) {
-    
+  public void computeFootTarget(PVector body_position, float bodyRotation) { 
     PVector closest_border_point = new PVector(0,0);
-    
     PVector relative_offset_pos = foot_anchor_offset.copy().rotate(bodyRotation); // relative to the body
     PVector border_calc = new PVector(0,0); // manipulated to calculate which border is closest
     border_calc = body_position.copy().add(relative_offset_pos); // uhhhhh...its accounting for the offset and rotation of body 
@@ -134,7 +137,7 @@ public class Leg {
     
     if (border_calc.y >= border_calc.x) { // spider is closer to either top or bottom
     
-      if (spider_pos.y >= 400) { // spider is closer to bottom
+      if (pivot_pos.y >= 400) { // spider is closer to bottom
         closest_border_point.set(body_position.x + relative_offset_pos.x,800);
         
       } else { // spider is closer to top
@@ -143,7 +146,7 @@ public class Leg {
       
     } else { // spider is closer to either left or right
     
-      if (spider_pos.x >= 400) { // spider is closer to right
+      if (pivot_pos.x >= 400) { // spider is closer to right
         closest_border_point.set(800,body_position.y + relative_offset_pos.y);
         
       } else { // spider is closer to left
