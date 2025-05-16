@@ -5,16 +5,21 @@ public class Spider {
   private PVector position = new PVector(width/2,height * 9/10); // Spider body location
   private PVector target_position = new PVector(0,0); // where spider wants to be
   private PVector velocity = new PVector(0,0); // 
-  private float rotation = 0; // spiders body rotation
+  private float rotation = PI/4; // spiders body rotation
   private boolean is_moving = false;
   
   
   
   // Legs
-  Leg leg1 = new Leg(15,1,90,90,new PVector(-100,0)); // inner left leg
-  Leg leg2 = new Leg(15,1,100,100,new PVector(-150,0)); // outer left leg
-  Leg leg3 = new Leg(15,-1,90,90,new PVector(100,0)); // inner right leg
-  Leg leg4 = new Leg(15,-1,100,100,new PVector(150,0)); // outer right leg
+  //Leg leg1 = new Leg(15,1,90,90,new PVector(-100,0)); // inner left leg
+  //Leg leg2 = new Leg(15,1,100,100,new PVector(-150,0)); // outer left leg
+  //Leg leg3 = new Leg(15,-1,90,90,new PVector(100,0)); // inner right leg
+  //Leg leg4 = new Leg(15,-1,100,100,new PVector(150,0)); // outer right leg
+  Leg leg1 = new Leg(15,1,100,100,new PVector(-150,0)); // outer left leg
+  Leg leg2 = new Leg(15,1,90,90,new PVector(-100,0)); // inner left leg
+  Leg leg3 = new Leg(15,-1,100,100,new PVector(150,0)); // outer right leg
+  Leg leg4 = new Leg(15,-1,90,90,new PVector(100,0)); // inner right leg
+  
   private final Leg[] legs = {leg1,leg2,leg3,leg4};
   
   
@@ -35,11 +40,13 @@ public class Spider {
       moveTo(target_position);}
     
     // moves and draws legs
+    this.averageRotation();
     for (int i = 0; i < legs.length; i++){
       legs[i].computeFootTarget(position, rotation);
       legs[i].setPivot(position);
       legs[i].update();
     }
+    this.averageRotation();
     // draws body
     this.render(); // has to draw over the legs
   }
@@ -67,6 +74,17 @@ public class Spider {
         is_moving = false;
       }
     }
+  }
+  
+  private void averageRotation() {
+    PVector running_total = new PVector(0,0);
+    for (int i = 0; i < legs.length; i++){
+      running_total.add(legs[i].getNormal()); 
+    }
+    running_total.mult(-1);
+    
+    rotation = running_total.heading() + PI/2;
+    
   }
   
   
