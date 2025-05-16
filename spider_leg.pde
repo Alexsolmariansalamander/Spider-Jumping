@@ -12,6 +12,7 @@ public class Leg {
   // leg control variables
   private PVector pivot_pos = new PVector(400,400); // body/pivot location
   private PVector desired_foot_pos = new PVector(0,0);
+  private PVector normal = new PVector(0,0);
   
   
   // leg draw variables
@@ -121,6 +122,9 @@ public class Leg {
   public PVector getFootPos() {
     return foot_pos;
   }
+  public PVector getNormal() {
+    return normal;
+  }
   
   
   
@@ -139,18 +143,22 @@ public class Leg {
     
       if (pivot_pos.y >= 400) { // spider is closer to bottom
         closest_border_point.set(body_position.x + relative_offset_pos.x,800);
+        normal.set(0,1);
         
       } else { // spider is closer to top
         closest_border_point.set(body_position.x + relative_offset_pos.x,0);
+        normal.set(0,-1);
       }
       
     } else { // spider is closer to either left or right
     
       if (pivot_pos.x >= 400) { // spider is closer to right
         closest_border_point.set(800,body_position.y + relative_offset_pos.y);
+        normal.set(1,0);
         
       } else { // spider is closer to left
         closest_border_point.set(0,body_position.y + relative_offset_pos.y);
+        normal.set(-1,0);
       }
     }
     this.setFootPos(closest_border_point);
