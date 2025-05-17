@@ -11,14 +11,18 @@ public class Spider {
   
   
   // Legs
-  //Leg leg1 = new Leg(15,1,90,90,new PVector(-100,0)); // inner left leg
-  //Leg leg2 = new Leg(15,1,100,100,new PVector(-150,0)); // outer left leg
-  //Leg leg3 = new Leg(15,-1,90,90,new PVector(100,0)); // inner right leg
-  //Leg leg4 = new Leg(15,-1,100,100,new PVector(150,0)); // outer right leg
   Leg leg1 = new Leg(15,1,100,100,new PVector(-150,0)); // outer left leg
   Leg leg2 = new Leg(15,1,90,90,new PVector(-100,0)); // inner left leg
   Leg leg3 = new Leg(15,-1,100,100,new PVector(150,0)); // outer right leg
   Leg leg4 = new Leg(15,-1,90,90,new PVector(100,0)); // inner right leg
+  
+  //Leg leg1 = new Leg(15,1,80,85,new PVector(-80,0)); // back left leg
+  //Leg leg2 = new Leg(15,1,100,100,new PVector(-150,0)); // outer left leg
+  //Leg leg3 = new Leg(15,1,90,90,new PVector(-110,0)); // inner left leg
+  //Leg leg4 = new Leg(15,-1,80,85,new PVector(80,0)); // back right leg
+  //Leg leg5 = new Leg(15,-1,100,100,new PVector(150,0)); // outer right leg
+  //Leg leg6 = new Leg(15,-1,90,90,new PVector(110,0)); // inner right leg
+  
   
   private final Leg[] legs = {leg1,leg2,leg3,leg4};
   
@@ -41,8 +45,8 @@ public class Spider {
     
     // moves and draws legs
     for (int i = 0; i < legs.length; i++){
-      legs[i].computeFootTarget(position, rotation);
       legs[i].setPivot(position);
+      legs[i].computeFootTarget(rotation);
       legs[i].update();
     }
     this.averageRotation();
