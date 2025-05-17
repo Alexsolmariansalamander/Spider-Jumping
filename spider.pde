@@ -40,7 +40,6 @@ public class Spider {
       moveTo(target_position);}
     
     // moves and draws legs
-    this.averageRotation();
     for (int i = 0; i < legs.length; i++){
       legs[i].computeFootTarget(position, rotation);
       legs[i].setPivot(position);
@@ -76,10 +75,14 @@ public class Spider {
     }
   }
   
+  
   private void averageRotation() {
     PVector running_total = new PVector(0,0);
-    for (int i = 0; i < legs.length; i++){
-      running_total.add(legs[i].getNormal()); 
+    for (Leg leg : legs){
+      float max_reach = leg.getLegLength();
+      float d = leg.getFootPos().dist(this.position);
+      float w = map(constrain(d, 0, max_reach), 0, max_reach, 1, 0.2);
+      running_total.add(leg.getNormal().mult(w));
     }
     running_total.mult(-1);
     

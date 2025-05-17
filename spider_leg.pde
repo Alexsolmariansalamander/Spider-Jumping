@@ -125,6 +125,9 @@ public class Leg {
   public PVector getNormal() {
     return normal;
   }
+  public float getLegLength() {
+    return thigh_length + calf_length;
+  }
   
   
   
@@ -138,13 +141,12 @@ public class Leg {
     // calculating which axis is closer e.g.; (300,600) -> (-100,200) -> (100,200); therefore y is closer, also confirmed by going 800 - 600 = 200, and 200 < 300
     border_calc.sub(400,400);
     border_calc.set(abs(border_calc.x),abs(border_calc.y));
-    
+
     if (border_calc.y >= border_calc.x) { // spider is closer to either top or bottom
     
       if (pivot_pos.y >= 400) { // spider is closer to bottom
         closest_border_point.set(body_position.x + relative_offset_pos.x,800);
         normal.set(0,1);
-        
       } else { // spider is closer to top
         closest_border_point.set(body_position.x + relative_offset_pos.x,0);
         normal.set(0,-1);
@@ -155,13 +157,21 @@ public class Leg {
       if (pivot_pos.x >= 400) { // spider is closer to right
         closest_border_point.set(800,body_position.y + relative_offset_pos.y);
         normal.set(1,0);
-        
       } else { // spider is closer to left
         closest_border_point.set(0,body_position.y + relative_offset_pos.y);
         normal.set(-1,0);
       }
     }
+    //if (closest_border_point.dist(pivot_pos) <= thigh_length + calf_length) {
     this.setFootPos(closest_border_point);
+
+
+    
+    
+    // testing
+    fill(0,0,255);
+    PVector anchor_pos = relative_offset_pos.copy().add(pivot_pos);
+    circle(anchor_pos.x,anchor_pos.y,10);
   }
   
   
