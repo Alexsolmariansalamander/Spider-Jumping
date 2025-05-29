@@ -5,6 +5,7 @@ public class Spider {
   private PVector position = new PVector(width/2,height * 9/10); // Spider body location
   private PVector target_position = new PVector(0,0); // where spider wants to be
   private PVector velocity = new PVector(0,0); // 
+  private float move_speed = 2;
   private float rotation = PI/4; // spiders body rotation
   private boolean is_moving = false;
   
@@ -44,15 +45,17 @@ public class Spider {
       moveTo(target_position);}
     
     // moves and draws legs
-    for (int i = 0; i < legs.length; i++){
-      legs[i].setPivot(position);
-      legs[i].computeFootTarget(rotation);
-      legs[i].update();
+    for (Leg leg : legs) {
+      leg.setPivot(position);
+      leg.computeFootTarget(rotation);
+      leg.update();
     }
     this.averageRotation();
     // draws body
     this.render(); // has to draw over the legs
   }
+  
+  
   
   public void render(){
     // ____Body____
@@ -65,19 +68,25 @@ public class Spider {
   }
   
   
+  
   public void moveTo(PVector moving_to) {
-    if (is_moving == false) {
+    if (is_moving == false || moving_to != target_position) {
       is_moving = true;
       target_position.set(moving_to);
+      PVector direction = target_position.copy().sub(position).normalize(); 
+      velocity.set(direction.mult(move_speed));
     }
     else {
-      position.set(moving_to.x, moving_to.y);
+      position.add(velocity);
       
-      if (position.dist(moving_to) == 0) {
+      if (position.dist(moving_to) <= 1) {
         is_moving = false;
+        position.set(moving_to);
+        velocity.set(new PVector(0,0));
       }
     }
   }
+  
   
   
   private void averageRotation() {
@@ -91,7 +100,6 @@ public class Spider {
     running_total.mult(-1);
     
     rotation = running_total.heading() + PI/2;
-    
   }
   
   

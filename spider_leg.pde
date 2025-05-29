@@ -150,7 +150,7 @@ public class Leg {
       float dist_anchor = wall_pos.dist(anchor_pos);
       // if the wall is within reach
       if (dist_pivot < leg_length) {
-        
+        // check if its the current closest wall
         if (dist_anchor < closest_dist) {
           closest_dist = dist_anchor;
           closest_wall.set(wall_pos);
@@ -159,9 +159,9 @@ public class Leg {
     }
     
     // checking to see if any wall was in reach
-    if (closest_dist == 999) {
+    if (closest_dist == 999) { // no
       this.setFootPos(pivot_pos);
-    } else {
+    } else { // yes
       this.setFootPos(closest_wall);
     }
     
@@ -172,48 +172,7 @@ public class Leg {
     else if (closest_wall.dist(top_wall_pos) == 0) {normal.set(0,-1);}
     else if (closest_wall.dist(bot_wall_pos) == 0) {normal.set(0,1);}
     
-    
-    
-    
-    
-    
-    
-    //PVector closest_border_point = new PVector(0,0);
-    //PVector relative_offset_pos = foot_anchor_offset.copy().rotate(bodyRotation); // relative to the body
-    //PVector border_calc = new PVector(0,0); // manipulated to calculate which border is closest
-    //border_calc = pivot_pos.copy().add(relative_offset_pos); // uhhhhh...its accounting for the offset and rotation of body 
-    
-    //// calculating which axis is closer e.g.; (300,600) -> (-100,200) -> (100,200); therefore y is closer, also confirmed by going 800 - 600 = 200, and 200 < 300
-    //border_calc.sub(400,400);
-    //border_calc.set(abs(border_calc.x),abs(border_calc.y));
-
-    //if (border_calc.y >= border_calc.x) { // spider is closer to either top or bottom
-    
-    //  if (pivot_pos.y >= 400) { // spider is closer to bottom
-    //    closest_border_point.set(pivot_pos.x + relative_offset_pos.x,800);
-    //    normal.set(0,1);
-    //  } else { // spider is closer to top
-    //    closest_border_point.set(pivot_pos.x + relative_offset_pos.x,0);
-    //    normal.set(0,-1);
-    //  }
-      
-    //} else { // spider is closer to either left or right
-    
-    //  if (pivot_pos.x >= 400) { // spider is closer to right
-    //    closest_border_point.set(800,pivot_pos.y + relative_offset_pos.y);
-    //    normal.set(1,0);
-    //  } else { // spider is closer to left
-    //    closest_border_point.set(0,pivot_pos.y + relative_offset_pos.y);
-    //    normal.set(-1,0);
-    //  }
-    //}
-    ////if (closest_border_point.dist(pivot_pos) <= thigh_length + calf_length) {
-    //this.setFootPos(closest_border_point);
-
-
-    
-    
-    // testing
+    // testing, draws anchor positions as a blue dot
     fill(0,0,255);
     circle(anchor_pos.x,anchor_pos.y,10);
   }
