@@ -8,7 +8,7 @@ public class Leg {
   private final float thigh_length; // 100
   private final float calf_length; // 100
   private final PVector foot_anchor_offset; // determines where abouts the foot want to be
-  private final float foot_speed = 3;
+  private final float foot_speed = 5;
   
   // leg control variables
   private PVector pivot_pos = new PVector(400,400); // body/pivot location
@@ -78,7 +78,7 @@ public class Leg {
   private void solveIK() {
     // given spider_pos and foot_pos find:
     // thigh_length , thigh_angle , joint_pos , calf_length , calf_angle
-    float distance = dist(pivot_pos.x,pivot_pos.y,desired_foot_pos.x,desired_foot_pos.y);
+    float distance = dist(pivot_pos.x,pivot_pos.y,foot_pos.x,foot_pos.y);
     
     // Thigh stuff
     //cosine rule
@@ -118,7 +118,9 @@ public class Leg {
   public float getLegLength() {
     return thigh_length + calf_length;
   }
-  
+  public void set_floating(boolean floating) {
+    this.floating = floating;
+  }
   
   
   // computes the target foot location based on the displaced anchor thats floating to the left or right of the body
@@ -150,9 +152,10 @@ public class Leg {
     
     // checking to see if any wall was in reach
     if (closest_dist == 999) { // no
-      this.setFootPos(pivot_pos);
+      set_floating(true);
     } else { // yes
       this.setFootPos(closest_wall);
+      set_floating(false);
     }
     
     // setting the normal
@@ -177,45 +180,65 @@ public class Leg {
     float foot_des_distance = dist(foot_pos.x,foot_pos.y,desired_foot_pos.x,desired_foot_pos.y);
     float max_length = thigh_length + calf_length;
     
+    
+    
     // locks foot_pos to be within range
-    // ...
+    
+    println(foot_piv_distance + " " + max_length);
+    if (foot_piv_distance > max_length) {
+      println(foot_pos + " " + pivot_pos);
+      foot_pos.sub(pivot_pos).normalize().mult(max_length+1).add(pivot_pos);
+      println(foot_pos + " " + pivot_pos);
+    }
+    
     
     // checks if desired_foot_pos is within foot reach
-      // No: floating = true ???     I think technically true 
+      // No: floating = true ???     I think technically true
     
     if (floating) {
+      PVector temp_des_foot_pos = desired_foot_pos;
+      if (piv_des_distance <= max_length) {}
+      else {
+        desired_foot_pos.sub(pivot_pos).normalize().mult(max_length -0.1).add(pivot_pos);
+      }
+      foot_des_distance = dist(foot_pos.x,foot_pos.y,desired_foot_pos.x,desired_foot_pos.y);
+      if (foot_des_distance <= foot_speed * 2){
+        foot_pos.set(desired_foot_pos);
+      } else {
+        PVector vel_dir = foot_pos.copy().sub(desired_foot_pos).normalize();
+        foot_pos.add(vel_dir.mult(-foot_speed));
+      }
+      desired_foot_pos.set(temp_des_foot_pos);
       // moves clamps desired_foot_pos.clone() to reachable range
       // moves foot towards desired_foot_pos in straight line ... Account for (foot_pos == desired_foot_pos)
     }
     
     else if (!stepping && !floating){
       // dont move foot
-      // check if foot is within x pixels of disired foot pos
-        // No: stepping = true
+      if (foot_des_distance > 50 || foot_piv_distance >= max_length-1){
+        stepping = true;
+        println("foot des distance: " + foot_des_distance);
+      }
     }
     
     else if (stepping) {
       // temp
-      // move foot in straight line towards desired_foot_pos
-      // check if foot is within some small distance (2x foot_speed) of desired_foot_pos
-        // Yes: stepping = false
+      PVector vel_dir = foot_pos.copy().sub(desired_foot_pos).normalize();
+      foot_pos.add(vel_dir.mult(-foot_speed));
+      foot_des_distance = dist(foot_pos.x,foot_pos.y,desired_foot_pos.x,desired_foot_pos.y);
+      if (foot_des_distance <= foot_speed * 2){
+        stepping = false;
+        foot_pos.set(desired_foot_pos);
+      }
     }
     
     
     
-    //// Clamping foot distance. (its not ever really used, but keeping it as an edge case)
-    //if (distance > max_length) {
-    //  PVector desired_temp = new PVector(desired_foot_pos.x,desired_foot_pos.y);
-    //  desired_foot_pos.sub(pivot_pos);
-    //  foot_pos.set(desired_foot_pos.normalize().mult(max_length).add(pivot_pos));
-    //  desired_foot_pos.set(desired_temp);
-    //  distance = max_length;
-    //} else {
-    //  foot_pos.set(desired_foot_pos);
-    //}
-    
-    
-    
+    // testing
+    fill(255,0,0); // red
+    circle(foot_pos.x,foot_pos.y, 40);
+    fill(255,255,0); // yellow
+    circle(desired_foot_pos.x,desired_foot_pos.y, 20);
   }
   
   
