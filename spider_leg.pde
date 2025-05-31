@@ -8,11 +8,14 @@ public class Leg {
   private final float thigh_length; // 100
   private final float calf_length; // 100
   private final PVector foot_anchor_offset; // determines where abouts the foot want to be
+  private final float foot_speed = 3;
   
   // leg control variables
   private PVector pivot_pos = new PVector(400,400); // body/pivot location
   private PVector desired_foot_pos = new PVector(0,0);
   private PVector normal = new PVector(0,0);
+  private boolean stepping = false; // foot is moving to desired foot_pos and is near a surface
+  private boolean floating = false; // foot is not near surface, so just goes moves as close to desired foot_pos as possible
   
   
   // leg draw variables
@@ -167,21 +170,52 @@ public class Leg {
   
   
   // updates the foot_pos based on body_pos and desired_foot_pos
+  
   private void step() {
-    
-    float distance = dist(pivot_pos.x,pivot_pos.y,desired_foot_pos.x,desired_foot_pos.y);
+    float piv_des_distance = dist(pivot_pos.x,pivot_pos.y,desired_foot_pos.x,desired_foot_pos.y);
+    float foot_piv_distance = dist(foot_pos.x,foot_pos.y,pivot_pos.x,pivot_pos.y);
+    float foot_des_distance = dist(foot_pos.x,foot_pos.y,desired_foot_pos.x,desired_foot_pos.y);
     float max_length = thigh_length + calf_length;
     
-    // Clamping foot distance. (its not ever really used, but keeping it as an edge case)
-    if (distance > max_length) {
-      PVector desired_temp = new PVector(desired_foot_pos.x,desired_foot_pos.y);
-      desired_foot_pos.sub(pivot_pos);
-      foot_pos.set(desired_foot_pos.normalize().mult(max_length).add(pivot_pos));
-      desired_foot_pos.set(desired_temp);
-      distance = max_length;
-    } else {
-      foot_pos.set(desired_foot_pos);
+    // locks foot_pos to be within range
+    // ...
+    
+    // checks if desired_foot_pos is within foot reach
+      // No: floating = true ???     I think technically true 
+    
+    if (floating) {
+      // moves clamps desired_foot_pos.clone() to reachable range
+      // moves foot towards desired_foot_pos in straight line ... Account for (foot_pos == desired_foot_pos)
     }
+    
+    else if (!stepping && !floating){
+      // dont move foot
+      // check if foot is within x pixels of disired foot pos
+        // No: stepping = true
+    }
+    
+    else if (stepping) {
+      // temp
+      // move foot in straight line towards desired_foot_pos
+      // check if foot is within some small distance (2x foot_speed) of desired_foot_pos
+        // Yes: stepping = false
+    }
+    
+    
+    
+    //// Clamping foot distance. (its not ever really used, but keeping it as an edge case)
+    //if (distance > max_length) {
+    //  PVector desired_temp = new PVector(desired_foot_pos.x,desired_foot_pos.y);
+    //  desired_foot_pos.sub(pivot_pos);
+    //  foot_pos.set(desired_foot_pos.normalize().mult(max_length).add(pivot_pos));
+    //  desired_foot_pos.set(desired_temp);
+    //  distance = max_length;
+    //} else {
+    //  foot_pos.set(desired_foot_pos);
+    //}
+    
+    
+    
   }
   
   
