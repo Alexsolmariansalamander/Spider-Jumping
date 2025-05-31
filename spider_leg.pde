@@ -40,6 +40,7 @@ public class Leg {
   
   // calculates and draws. The general call for updating the leg
   public void update() {
+    step();
     solveIK();
     render();
   }
@@ -72,31 +73,17 @@ public class Leg {
   
   // calculates the angles and positions of the leg segments using trig
   private void solveIK() {
-    // given spider_pos and desired_foot_pos find:
-    // foot_pos , thigh_length , thigh_angle , joint_pos , calf_length , calf_angle
+    // given spider_pos and foot_pos find:
+    // thigh_length , thigh_angle , joint_pos , calf_length , calf_angle
     float distance = dist(pivot_pos.x,pivot_pos.y,desired_foot_pos.x,desired_foot_pos.y);
-    float max_length = thigh_length + calf_length;
-    
-    // Clamping foot distance
-    if (distance > max_length) {
-      PVector desired_temp = new PVector(desired_foot_pos.x,desired_foot_pos.y);
-      desired_foot_pos.sub(pivot_pos);
-      foot_pos.set(desired_foot_pos.normalize().mult(max_length).add(pivot_pos));
-      desired_foot_pos.set(desired_temp);
-      distance = max_length;
-    } else {
-      foot_pos.set(desired_foot_pos);
-    }
     
     // Thigh stuff
     //cosine rule
-    PVector foot_temp = new PVector (foot_pos.x,foot_pos.y);
-    PVector foot_relative = foot_pos.sub(pivot_pos);
+    PVector foot_relative = foot_pos.copy().sub(pivot_pos);
     float foot_true_bearing = foot_relative.heading();
     float thigh_numerator = pow(thigh_length,2) + pow(distance,2) - pow(calf_length,2);
     float thigh_denominator = 2 * thigh_length * distance;
     thigh_angle = leg_bend * acos(thigh_numerator/thigh_denominator) + foot_true_bearing - PI/2;
-    foot_pos.set(foot_temp);
     
     // Joint stuff
     //spider_pos + PVector(sin(angle) * thigh_length, cos(angle) * thigh_length)
@@ -175,8 +162,27 @@ public class Leg {
     // testing, draws anchor positions as a blue dot
     fill(0,0,255);
     circle(anchor_pos.x,anchor_pos.y,10);
-  }
+  } 
   
+  
+  
+  // updates the foot_pos based on body_pos and desired_foot_pos
+  private void step() {
+    
+    float distance = dist(pivot_pos.x,pivot_pos.y,desired_foot_pos.x,desired_foot_pos.y);
+    float max_length = thigh_length + calf_length;
+    
+    // Clamping foot distance. (its not ever really used, but keeping it as an edge case)
+    if (distance > max_length) {
+      PVector desired_temp = new PVector(desired_foot_pos.x,desired_foot_pos.y);
+      desired_foot_pos.sub(pivot_pos);
+      foot_pos.set(desired_foot_pos.normalize().mult(max_length).add(pivot_pos));
+      desired_foot_pos.set(desired_temp);
+      distance = max_length;
+    } else {
+      foot_pos.set(desired_foot_pos);
+    }
+  }
   
   
   
