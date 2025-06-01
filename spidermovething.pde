@@ -1,3 +1,13 @@
+
+/*---------------------------------------------------------------
+ *  Author : Alexander Vissarion (49052829)
+ *  Inspired by: nothing
+ *  Description:
+ *    Drives the main game loop, creating the window and calling different methods of the spider
+ *    responding to different inputs e.g.; Move to mouse, Jump
+ *---------------------------------------------------------------*/
+
+
 Spider spider;
 
 void setup() {

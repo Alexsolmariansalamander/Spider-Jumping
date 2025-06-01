@@ -1,3 +1,16 @@
+
+/*---------------------------------------------------------------
+ *  Author : Alexander Vissarion (49052829)
+ *  Inspired by: nothing
+ *  Description:
+ *    Controls and draws the main body of the spider,
+ *    and the handling of multiple body parts (legs),
+ *    rotates the body to face walls,
+ *    moves the spider/body to the target position,
+ *    and handles the spider jump,
+ *---------------------------------------------------------------*/
+ 
+ 
 public class Spider {
    /*  ________VARIABLES________  */
    
@@ -44,6 +57,7 @@ public class Spider {
     // moves body
     if (is_moving){
       moveTo(target_position);}
+    // jumps spider
     if (is_jumping) {
       jump();
     }

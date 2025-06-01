@@ -1,5 +1,16 @@
+
+/*---------------------------------------------------------------
+ *  Author : Alexander Vissarion (49052829)
+ *  Inspired by: my big brain
+ *  Description:
+ *    Controls and draws the leg of the spider,
+ *    uses inverse kinematics for drawing the legs,
+ *    has an auto foot target method that finds the closest viable wall,
+ *    and a step method that moves the leg towards the desired target pos
+ *---------------------------------------------------------------*/
+
+
 public class Leg {
-  
   
   /*  ________VARIABLES________  */
   // init variables
