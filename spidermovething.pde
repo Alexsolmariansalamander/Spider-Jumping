@@ -15,3 +15,9 @@ void draw() {
 void mouseClicked() {
   spider.moveTo(new PVector(mouseX,mouseY));
 }
+
+void keyPressed() {
+  if (keyPressed && key == 'j') {
+    spider.jump();
+  }
+}

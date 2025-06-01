@@ -8,7 +8,7 @@ public class Leg {
   private final float thigh_length; // 100
   private final float calf_length; // 100
   private final PVector foot_anchor_offset; // determines where abouts the foot want to be
-  private final float foot_speed = 5;
+  private final float foot_speed = 8;
   
   // leg control variables
   private PVector pivot_pos = new PVector(400,400); // body/pivot location
@@ -183,12 +183,8 @@ public class Leg {
     
     
     // locks foot_pos to be within range
-    
-    println(foot_piv_distance + " " + max_length);
     if (foot_piv_distance > max_length) {
-      println(foot_pos + " " + pivot_pos);
       foot_pos.sub(pivot_pos).normalize().mult(max_length+1).add(pivot_pos);
-      println(foot_pos + " " + pivot_pos);
     }
     
     
@@ -217,12 +213,12 @@ public class Leg {
       // dont move foot
       if (foot_des_distance > 50 || foot_piv_distance >= max_length-1){
         stepping = true;
-        println("foot des distance: " + foot_des_distance);
       }
     }
     
     else if (stepping) {
       // temp
+      
       PVector vel_dir = foot_pos.copy().sub(desired_foot_pos).normalize();
       foot_pos.add(vel_dir.mult(-foot_speed));
       foot_des_distance = dist(foot_pos.x,foot_pos.y,desired_foot_pos.x,desired_foot_pos.y);
